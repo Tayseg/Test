@@ -137,11 +137,17 @@ const Hero = () => {
                         </div>
                       </div>
                       <div className={styles.btns}>
-                        <button
+                        {/* <button
                           className={cn("button", styles.button)}
                           onClick={() => setVisibleModalBid(true)}
                         >
                           Place a bid
+                        </button> */}
+                        <button
+                          className={cn("button", styles.button)}
+                          onClick={() => setVisibleModalBid(true)}
+                        >
+                          Purchase now
                         </button>
                         <Link
                           className={cn("button-stroke", styles.button)}

@@ -16,7 +16,7 @@ const Home = () => {
       {/* <HotBid classSection="section" /> */}
       {/* <Collections /> */}
       {/* <Discover /> */}
-      <Description />
+      {/* <Description /> */}
     </>
   );
 };

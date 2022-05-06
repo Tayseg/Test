@@ -28,18 +28,18 @@ const nav = [
     url: "/search01",
     title: "Discover",
   },
-  {
-    url: "/faq",
-    title: "How it work",
-  },
-  {
-    url: "/item",
-    title: "Create item",
-  },
-  {
-    url: "/profile",
-    title: "Profile",
-  },
+  // {
+  //   url: "/faq",
+  //   title: "How it work",
+  // },
+  // {
+  //   url: "/item",
+  //   title: "Create item",
+  // },
+  // {
+  //   url: "/profile",
+  //   title: "Profile",
+  // },
 ];
 
 const Headers = () => {
@@ -189,6 +189,17 @@ const Headers = () => {
               </Link>
             )
           }
+
+          {
+            user && (
+              <Link
+                className={cn("button-small", styles.button)}
+                to={'/user/' + user?.address}
+              >
+                My Profile
+              </Link>
+            )
+          }
         </div>
         <Notification className={styles.notification} />
         {
@@ -198,6 +209,17 @@ const Headers = () => {
               to="/upload-variants"
             >
               Upload
+            </Link>
+          )
+        }
+        {/* Add user profile link **/}
+        {
+          user && (
+            <Link
+              className={cn("button-stroke button-small", styles.button)}
+              to={'/user/' + user?.address}
+            >
+              My Profile
             </Link>
           )
         }

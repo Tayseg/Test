@@ -128,14 +128,23 @@ const Selection = () => {
                         <div className={styles.price}>{x.price}</div>
                         <div className={styles.content}>{x.content}</div>
                       </div>
-                      <button
+                      {/* <button
                         className={cn(
                           "button-stroke button-small",
                           styles.button
                         )}
                       >
                         Place a bid
+                      </button> */}
+                      <button
+                        className={cn(
+                          "button-stroke button-small",
+                          styles.button
+                        )}
+                      >
+                        Purchase now
                       </button>
+
                     </div>
                   </Link>
                 )

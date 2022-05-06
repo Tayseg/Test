@@ -47,34 +47,34 @@ const Upload = () => {
   const [loading, setLoading] = useState(false);
 
   //  Get the options of royalties from the server
-  useEffect(() => {
-    (async () => {
-      setLoading(true);
-      await Moralis.start({ serverUrl: MORALIS_SERVER_URL, appId: MORALIS_APP_ID });
-      const Royalty = Moralis.Object.extend('Royalty');
-      const query = new Moralis.Query(Royalty);
-      const { attributes: { minRoyalty, maxRoyalty, interval } } = (await query.find())[0];
+  // useEffect(() => {
+  //   (async () => {
+  //     setLoading(true);
+  //     await Moralis.start({ serverUrl: MORALIS_SERVER_URL, appId: MORALIS_APP_ID });
+  //     const Royalty = Moralis.Object.extend('Royalty');
+  //     const query = new Moralis.Query(Royalty);
+  //     const { attributes: { minRoyalty, maxRoyalty, interval } } = (await query.find())[0];
 
-      const getRoyalties = (royalties, currentRoyalty, _interval) => {
-        if (maxRoyalty <= currentRoyalty + _interval) {
-          royalties.push(`${maxRoyalty}%`);
-          setRoyalties(royalties[0]);
-          setRoyaltiesOptions(royalties);
-        } else {
-          currentRoyalty += _interval;
-          royalties.push(`${currentRoyalty}%`);
-          getRoyalties(royalties, currentRoyalty, _interval);
-        }
-      };
+  //     const getRoyalties = (royalties, currentRoyalty, _interval) => {
+  //       if (maxRoyalty <= currentRoyalty + _interval) {
+  //         royalties.push(`${maxRoyalty}%`);
+  //         setRoyalties(royalties[0]);
+  //         setRoyaltiesOptions(royalties);
+  //       } else {
+  //         currentRoyalty += _interval;
+  //         royalties.push(`${currentRoyalty}%`);
+  //         getRoyalties(royalties, currentRoyalty, _interval);
+  //       }
+  //     };
 
-      if (minRoyalty === maxRoyalty) {
-        setRoyaltiesOptions([`${minRoyalty}%`]);
-      } else {
-        getRoyalties([`${minRoyalty}%`], minRoyalty, interval);
-      }
-      setLoading(false);
-    })();
-  }, []);
+  //     if (minRoyalty === maxRoyalty) {
+  //       setRoyaltiesOptions([`${minRoyalty}%`]);
+  //     } else {
+  //       getRoyalties([`${minRoyalty}%`], minRoyalty, interval);
+  //     }
+  //     setLoading(false);
+  //   })();
+  // }, []);
 
   //  Upload the image on IPFS when it is selected.
   useEffect(() => {
@@ -123,9 +123,9 @@ const Upload = () => {
           metadata.property = property;
         }
 
-        if (royalties) {
-          metadata.royaltiesAmount = Number(royalties.split('%')[0]);
-        }
+        // if (royalties) {
+        //   metadata.royaltiesAmount = Number(royalties.split('%')[0]);
+        // }
 
         const jsonFile = new Moralis.File("metadata.json", { base64: btoa(JSON.stringify(metadata)) }); //  Make a file with that metadata
         await saveFile("metadata.json", jsonFile._source, { saveIPFS: true });   // Upload the file
@@ -292,7 +292,7 @@ const Upload = () => {
                       required
                     />
                     <div className={styles.row}>
-                      <div className={styles.col}>
+                      {/* <div className={styles.col}>
                         <div className={styles.field}>
                           <div className={styles.label}>Royalties</div>
                           <Dropdown
@@ -303,7 +303,7 @@ const Upload = () => {
                             options={royaltiesOptions}
                           />
                         </div>
-                      </div>
+                      </div> */}
                       <div className={styles.col}>
                         <TextInput
                           className={styles.field}

@@ -37,11 +37,11 @@ const Preview = ({ className, onClose, imageFile, royalties, control, clearData 
                 </div>
               </div>
 
-              <div className={styles.line}>
+              {/* <div className={styles.line}>
                 <div className={styles.title}>
                   Royalty: {royalties}
                 </div>
-              </div>
+              </div> */}
 
               <div className={styles.line}>
                 <div className={styles.title}>

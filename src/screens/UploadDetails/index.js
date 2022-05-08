@@ -80,9 +80,9 @@ const Upload = () => {
   useEffect(() => {
     (async () => {
       setLoading(true);
-      if (!isAuthenticated) {
-        await authenticate();
-      }
+      // if (!isAuthenticated) {
+      //   await authenticate();
+      // }
       if (file) {
         await saveFile(file.name, file.file, { saveIPFS: true });  //  Upload an image file on IPFS
       }
@@ -101,9 +101,9 @@ const Upload = () => {
     const { item_name, description, royalties, size, property } = getValues();
 
     if (item_name && description && file) {
-      if (!isAuthenticated) {
-        await authenticate();
-      }
+      // if (!isAuthenticated) {
+      //   await authenticate();
+      // }
       if (moralisFileValue) {
         const imageCid = await moralisFileValue.ipfs(); //  Get the URI of the uploaded image
         setMoralisFileValue(null);

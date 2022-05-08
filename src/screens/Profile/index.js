@@ -35,11 +35,14 @@ const Profile = () => {
 
   useEffect(() => {
     (async () => {
+      console.log("user porfile authentication");
       try {
         setLoading(true);
-        if (!isAuthenticated) {
-          await authenticate();
-        }
+        console.log("user authentication", isAuthenticated)
+        // if (!isAuthenticated) {
+        //   console.log("here again")
+        //   await authenticate();
+        // }
         /* ----------  Get the data of the user ---------- */
         const User = Moralis.Object.extend('_User');
         const query = new Moralis.Query(User);

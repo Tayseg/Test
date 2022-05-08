@@ -18,10 +18,12 @@ function App() {
 
   useEffect(() => {
     (async () => {
+      console.log("morali service");
       setLoading(true);
       if (localStorage.getItem(LOCALSTORAGE_USER)) {
         console.log('# isAuthenticated: ', isAuthenticated);
         if (!isAuthenticated) {
+          console.log("whjy no tehere")
           await authenticate();
           const balanceData = await getBalances();
           const balance = Number(balanceData.balance) * Math.pow(10, -18);
@@ -41,7 +43,6 @@ function App() {
           localStorage.setItem(LOCALSTORAGE_USER, JSON.stringify(userData));
           dispatch(updateUser(userData));
         }
-
       }
       setLoading(false);
     })();

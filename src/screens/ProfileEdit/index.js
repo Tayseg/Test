@@ -61,9 +61,9 @@ const ProfileEdit = () => {
   useEffect(() => {
     (async () => {
       setLoading(true);
-      // if (!isAuthenticated) {
-      //   await authenticate();
-      // }
+      if (!isAuthenticated) {
+        await authenticate();
+      }
       const User = Moralis.Object.extend('_User');
       const query = new Moralis.Query(User);
 

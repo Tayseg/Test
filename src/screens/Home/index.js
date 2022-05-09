@@ -5,7 +5,7 @@ import Selection from "./Selection";
 // import HotBid from "../../components/HotBid";
 // import Collections from "./Collections";
 // import Discover from "./Discover";
-import Description from "./Description";
+// import Description from "./Description";
 
 const Home = () => {
   return (

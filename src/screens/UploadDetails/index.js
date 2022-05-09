@@ -40,7 +40,7 @@ const Upload = () => {
   const [imageFile, setImageFile] = useState(null);
   const { moralisFile, saveFile } = useMoralisFile();
   const [moralisFileValue, setMoralisFileValue] = useState(null);
-  const [royalties, setRoyalties] = useState('');
+  // const [royalties, setRoyalties] = useState('');
   const [visibleModal, setVisibleModal] = useState(false);
   const [visiblePreview, setVisiblePreview] = useState(false);
   const [royaltiesOptions, setRoyaltiesOptions] = useState([]);
@@ -80,9 +80,7 @@ const Upload = () => {
   useEffect(() => {
     (async () => {
       setLoading(true);
-      // if (!isAuthenticated) {
-      //   await authenticate();
-      // }
+      await Moralis.start({ serverUrl: MORALIS_SERVER_URL, appId: MORALIS_APP_ID });
       if (file) {
         await saveFile(file.name, file.file, { saveIPFS: true });  //  Upload an image file on IPFS
       }
@@ -101,9 +99,9 @@ const Upload = () => {
     const { item_name, description, royalties, size, property } = getValues();
 
     if (item_name && description && file) {
-      // if (!isAuthenticated) {
-      //   await authenticate();
-      // }
+      if (!isAuthenticated) {
+        await authenticate();
+      }
       if (moralisFileValue) {
         const imageCid = await moralisFileValue.ipfs(); //  Get the URI of the uploaded image
         setMoralisFileValue(null);
@@ -123,9 +121,9 @@ const Upload = () => {
           metadata.property = property;
         }
 
-        // if (royalties) {
-        //   metadata.royaltiesAmount = Number(royalties.split('%')[0]);
-        // }
+        if (royalties) {
+          metadata.royaltiesAmount = Number(royalties.split('%')[0]);
+        }
 
         const jsonFile = new Moralis.File("metadata.json", { base64: btoa(JSON.stringify(metadata)) }); //  Make a file with that metadata
         await saveFile("metadata.json", jsonFile._source, { saveIPFS: true });   // Upload the file
@@ -143,13 +141,16 @@ const Upload = () => {
     setVisibleModal(false);
     setLoading(true);
     const { item_name, description, size, property } = getValues();
-    let royalty;
+    // let royalty;
 
-    if (royalties) {
-      royalty = Number(royalties.split('%')[0]) * 100; //  Calculate the correct royalities
-    } else {
-      royalty = 0;
-    }
+    // if (royalties) {
+    //   royalty = Number(royalties.split('%')[0]) * 100; //  Calculate the correct royalities
+    // } else {
+    //   royalty = 0;
+    // }
+
+    let royalty = 0;
+
     try {
       await Moralis.enableWeb3();
 
@@ -230,7 +231,7 @@ const Upload = () => {
   //  Clear all values
   const clearData = () => {
     setImageFile(null);
-    setRoyalties('');
+    // setRoyalties('');
     setMoralisFileValue(null);
     setValue('item_name', '');
     setValue('description', '');
@@ -357,7 +358,7 @@ const Upload = () => {
           </div>
           <Preview
             file={file}
-            royalties={royalties}
+            // royalties={royalties}
             control={control}
             className={cn(styles.preview, { [styles.active]: visiblePreview })}
             onClose={() => setVisiblePreview(false)}

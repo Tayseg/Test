@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import cn from "classnames";
-import { useMoralis, useNativeBalance, useChain } from "react-moralis";
+import { useMoralis } from "react-moralis";
 import { useDispatch, useSelector } from "react-redux";
+import { useWeb3React } from '@web3-react/core';
 import styles from "./Header.module.sass";
 import Icon from "../Icon";
 import Image from "../Image";
@@ -10,7 +11,6 @@ import Notification from "./Notification";
 import User from "./User";
 import { updateUser } from "../../redux/features/user";
 import {
-  CHAIN,
   LOCALSTORAGE_USER,
   CHAIN_ID,
   SWITCH_ERROR_CODE,
@@ -22,6 +22,8 @@ import {
   DECIMALS
 } from "../../utils/constants";
 import LoaderModal from "../LoaderModal";
+import { injected } from "../../utils/connectors";
+import { isNoEthereumObject } from "../../utils/errors";
 
 const nav = [
   {
@@ -43,9 +45,8 @@ const nav = [
 ];
 
 const Headers = () => {
-  const { Moralis, isAuthenticated, authenticate } = useMoralis();
-  const { getBalances } = useNativeBalance({ chain: CHAIN });
-  const { chainId } = useChain();
+  const { Moralis } = useMoralis();
+  const { activate, deactivate, account, chainId } = useWeb3React();
   const [visibleNav, setVisibleNav] = useState(false);
   const [search, setSearch] = useState("");
   const [searchedNfts, setSearchedNfts] = useState([]);
@@ -58,51 +59,10 @@ const Headers = () => {
 
   //  Connect wallet
   const connectWallet = async () => {
-    setLoading(true);
-    if (!isAuthenticated) {
-      await authenticate();
-    }
-
-    if (Number(chainId) !== CHAIN_ID) {
-      if (window.ethereum) {
-        try {
-          await window.ethereum.request({
-            method: 'wallet_switchEthereumChain',
-            params: [{ chainId: `0x${CHAIN_ID.toString(16)}` }],
-          });
-        } catch (switchError) {
-          if (switchError.code === SWITCH_ERROR_CODE) {
-            await window.ethereum.request({
-              method: 'wallet_addEthereumChain',
-              params: [
-                {
-                  chainId: `0x${CHAIN_ID.toString(16)}`,
-                  chainName: CHAIN_NAME,
-                  rpcUrls: RPC_URLS,
-                  blockExplorerUrls: BLOCK_EXPLORER_URLS,
-                  nativeCurrency: {
-                    name: NATIVE_CURRENCY_NAME,
-                    symbol: NATIVE_CURRENCY_SYMBOL, // 2-6 characters length
-                    decimals: DECIMALS,
-                  }
-                },
-              ],
-            });
-          }
-        }
-      }
-    }
-
-    const balanceData = await getBalances();
-    const { attributes: { ethAddress } } = Moralis.User.current();
-    const balance = Number(balanceData.balance) * Math.pow(10, -18);
-    const userData = {
-      address: `${ethAddress}`,
-      balance
-    };
-    localStorage.setItem(LOCALSTORAGE_USER, JSON.stringify(userData));
-    dispatch(updateUser(userData));
-    setLoading(false);
+    await activate(injected, (error) => {
+      if (isNoEthereumObject(error))
+        window.open("https://metamask.io/download.html");
+    });
   };
 
   //  Search NFTs
@@ -122,6 +82,124 @@ const Headers = () => {
     });
     setSearchedNfts(results);
   };
+
+  const isRegisteredUser = async (address) => {
+    const Users = Moralis.Object.extend('Users');
+    const query = new Moralis.Query(Users);
+    query.equalTo('walletAddress', address.toLowerCase());
+
+    const _users = await query.find();
+
+    if (_users.length > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  const registerUser = async (address) => {
+    const Users = Moralis.Object.extend('Users');
+    const user = new Users();
+
+    user.set('walletAddress', address.toLowerCase());
+
+    await user.save();
+  };
+
+  const getBalance = async (address) => {
+    const balance = await window.ethereum.request({ method: 'eth_getBalance', params: [address, 'latest'] });
+    const wei = parseInt(balance, 16);
+    const eth = (wei / Math.pow(10, 18));
+
+    return eth;
+  };
+
+  //  Switch network
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      if (chainId && account) {
+        if (Number(chainId) !== CHAIN_ID) {
+          if (window.ethereum) {
+            //  If the current network isn't the expected one, switch it to the expected one.
+            try {
+              await window.ethereum.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: `0x${CHAIN_ID.toString(16)}` }],
+              });
+
+              // Get balance and register user if he/she connects wallet firstly
+              const balance = await getBalance(account);
+
+              const isExisted = await isRegisteredUser(account);
+              if (!isExisted) {
+                registerUser(account);
+              }
+
+              const userData = {
+                address: account.toLowerCase(),
+                balance
+              };
+              localStorage.setItem(LOCALSTORAGE_USER, JSON.stringify(userData));
+              dispatch(updateUser(userData));
+
+            } catch (switchError) {
+              //  If the expected network isn't existed in the metamask.
+              if (switchError.code === SWITCH_ERROR_CODE) {
+                await window.ethereum.request({
+                  method: 'wallet_addEthereumChain',
+                  params: [
+                    {
+                      chainId: `0x${CHAIN_ID.toString(16)}`,
+                      chainName: CHAIN_NAME,
+                      rpcUrls: RPC_URLS,
+                      blockExplorerUrls: BLOCK_EXPLORER_URLS,
+                      nativeCurrency: {
+                        name: NATIVE_CURRENCY_NAME,
+                        symbol: NATIVE_CURRENCY_SYMBOL, // 2-6 characters length
+                        decimals: DECIMALS,
+                      }
+                    },
+                  ],
+                });
+
+                // Get balance and register user if he/she connects wallet firstly
+                const balance = await getBalance(account);
+
+                const isExisted = await isRegisteredUser(account);
+                if (!isExisted) {
+                  registerUser(account);
+                }
+
+                const userData = {
+                  address: account.toLowerCase(),
+                  balance
+                };
+                localStorage.setItem(LOCALSTORAGE_USER, JSON.stringify(userData));
+                dispatch(updateUser(userData));
+              }
+            }
+          }
+        } else {
+          // Get balance and register user if he/she connects wallet firstly
+          const balance = await getBalance(account);
+
+          const isExisted = await isRegisteredUser(account);
+          if (!isExisted) {
+            registerUser(account);
+          }
+
+          const userData = {
+            address: account.toLowerCase(),
+            balance
+          };
+          localStorage.setItem(LOCALSTORAGE_USER, JSON.stringify(userData));
+          dispatch(updateUser(userData));
+        }
+      }
+      setLoading(false);
+    })();
+  }, [chainId, account]);
 
   return (
     <header className={styles.header}>
@@ -189,38 +267,24 @@ const Headers = () => {
               </Link>
             )
           }
-
-          {
-            user && (
-              <Link
-                className={cn("button-small", styles.button)}
-                to={'/user/' + user?.address}
-              >
-                My Profile
-              </Link>
-            )
-          }
         </div>
         <Notification className={styles.notification} />
         {
           user && (
-            <Link
-              className={cn("button-small", styles.button)}
-              to="/upload-variants"
-            >
-              Upload
-            </Link>
-          )
-        }
-        {/* Add user profile link **/}
-        {
-          user && (
-            <Link
-              className={cn("button-stroke button-small", styles.button)}
-              to={'/user/' + user?.address}
-            >
-              My Profile
-            </Link>
+            <>
+              <Link
+                className={cn("button-small", styles.button)}
+                to="/upload-variants"
+              >
+                Upload
+              </Link>
+              <Link
+                className={cn("button-small", styles.button)}
+                to={`/user/${user?.address}`}
+              >
+                My Profile
+              </Link>
+            </>
           )
         }
         {!user && (
@@ -232,7 +296,7 @@ const Headers = () => {
           </button>
         )}
 
-        {user && <User className={styles.user} />}
+        {user && <User className={styles.user} deactivate={deactivate} />}
         <button
           className={cn(styles.burger, { [styles.active]: visibleNav })}
           onClick={() => setVisibleNav(!visibleNav)}

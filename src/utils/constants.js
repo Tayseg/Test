@@ -742,3 +742,4 @@ export const LOCALSTORAGE_USER = 'user';
 export const FEE_DENOMINATOR = 10000;
 export const SALE_TYPE_BUY_NOW = 'buy now';
 export const SALE_TYPE_AUCTION = 'auction';
+export const NO_ETHEREUM_OBJECT = /No Ethereum provider was found on window.ethereum/;

@@ -4,7 +4,7 @@ import { useWatch } from "react-hook-form";
 import styles from "./Preview.module.sass";
 import Icon from "../../../components/Icon";
 
-const Preview = ({ className, onClose, imageFile, royalties, control, clearData }) => {
+const Preview = ({ className, onClose, imageFile, control, clearData }) => {
   const { item_name, description, property, size } = useWatch({ control });
 
   return (

@@ -8,7 +8,7 @@ import Items from "./Items";
 import { useMoralis } from "react-moralis";
 import LoaderModal from "../../components/LoaderModal";
 import { useParams } from "react-router-dom";
-// import { MORALIS_APP_ID, MORALIS_SERVER_URL } from "../../utils/constants";
+import { MORALIS_APP_ID, MORALIS_SERVER_URL } from "../../utils/constants";
 
 const socials = [
   {
@@ -26,7 +26,7 @@ const socials = [
 ];
 
 const Profile = () => {
-  const { Moralis, isAuthenticated, authenticate } = useMoralis();
+  const { Moralis } = useMoralis();
   const { address } = useParams();
   const [visible, setVisible] = useState(false);
   const [nfts, setNfts] = useState([]);
@@ -35,19 +35,14 @@ const Profile = () => {
 
   useEffect(() => {
     (async () => {
-      console.log("user porfile authentication");
       try {
         setLoading(true);
-        console.log("user authentication", isAuthenticated)
-        // if (!isAuthenticated) {
-        //   console.log("here again")
-        //   await authenticate();
-        // }
+        await Moralis.start({ serverUrl: MORALIS_SERVER_URL, appId: MORALIS_APP_ID });
         /* ----------  Get the data of the user ---------- */
-        const User = Moralis.Object.extend('_User');
-        const query = new Moralis.Query(User);
+        const Users = Moralis.Object.extend('Users');
+        const query = new Moralis.Query(Users);
 
-        query.equalTo('accounts', address);
+        query.equalTo('walletAddress', address);
         const { id, attributes } = await query.first();
 
         setUserData({
@@ -57,8 +52,8 @@ const Profile = () => {
         /* --------------------------------------------- */
 
         //  Get NFTs of this user
+        console.log('### address => ', typeof address);
         const results = await Moralis.Cloud.run('getNftsByOwner', { ownerAccount: address });
-
         console.log('# results: ', results);
 
         setNfts(results);
@@ -66,7 +61,6 @@ const Profile = () => {
       } catch (error) {
         console.log('# error: ', error);
       }
-
     })();
   }, []);
 

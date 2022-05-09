@@ -3,34 +3,14 @@ import cn from "classnames";
 import { useParams } from "react-router-dom";
 import { useMoralis } from "react-moralis";
 import styles from "./Item.module.sass";
-// import Users from "./Users";
 import Control from "./Control";
-// import Options from "./Options";
 import { MORALIS_APP_ID, MORALIS_SERVER_URL } from "../../utils/constants";
 import Loader from "../../components/Loader";
-
-// const navLinks = ["Info", "Bids"];
-
-// const users = [
-//   {
-//     name: "Raquel Will",
-//     position: "Owner",
-//     avatar: "/images/content/avatar-2.jpg",
-//     reward: "/images/content/reward-1.svg",
-//   },
-//   {
-//     name: "Selina Mayert",
-//     position: "Creator",
-//     avatar: "/images/content/avatar-1.jpg",
-//   },
-// ];
 
 const Item = () => {
   const { Moralis } = useMoralis();
   const { address, tokenId } = useParams();
-  // const [activeIndex, setActiveIndex] = useState(0);
   const [nftData, setNftData] = useState(null);
-  const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -41,7 +21,7 @@ const Item = () => {
       //  Check that whether the NFT was minted on our marketplace or imported from outside
       const ImportedCollections = Moralis.Object.extend('ImportedCollections');
       const queryOfImportedCollections = new Moralis.Query(ImportedCollections);
-      queryOfImportedCollections.equalTo('contractAddress', address);
+      queryOfImportedCollections.equalTo('contractAddress', { $regex: address, $options: 'i' });
       const responseOfImportedCollections = await queryOfImportedCollections.find();
 
       //  If this is one of an imported collection

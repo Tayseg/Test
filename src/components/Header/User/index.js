@@ -6,22 +6,22 @@ import styles from "./User.module.sass";
 import Icon from "../../Icon";
 import Theme from "../../Theme";
 import { useDispatch, useSelector } from "react-redux";
-import { useMoralis } from "react-moralis";
+// import { useMoralis } from "react-moralis";
 import { updateUser } from "../../../redux/features/user";
 import { LOCALSTORAGE_USER } from "../../../utils/constants";
 
-const User = ({ className }) => {
+const User = ({ className, deactivate }) => {
   const [visible, setVisible] = useState(false);
-  const { logout } = useMoralis();
+  // const { logout } = useMoralis();
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
   const items = [
-    {
-      title: "My profile",
-      icon: "user",
-      url: `/user/${user?.address}`,
-    },
+    // {
+    //   title: "My profile",
+    //   icon: "user",
+    //   url: `/user/${user?.address}`,
+    // },
     {
       title: "Dark theme",
       icon: "bulb",
@@ -31,7 +31,8 @@ const User = ({ className }) => {
       icon: "exit",
       url: "/",
       onClick: () => {
-        logout();
+        // logout();
+        deactivate();
         localStorage.removeItem(LOCALSTORAGE_USER);
         dispatch(updateUser(null));
       },
@@ -71,7 +72,7 @@ const User = ({ className }) => {
                 <div className={styles.preview}>
                   <img
                     src="/images/content/etherium-circle.jpg"
-                    alt="Etherium"
+                    alt="Ethereum"
                   />
                 </div>
                 <div className={styles.details}>

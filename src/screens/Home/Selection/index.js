@@ -128,30 +128,21 @@ const Selection = () => {
                         <div className={styles.price}>{x.price}</div>
                         <div className={styles.content}>{x.content}</div>
                       </div>
-                      {/* <button
-                        className={cn(
-                          "button-stroke button-small",
-                          styles.button
-                        )}
-                      >
-                        Place a bid
-                      </button> */}
                       <button
                         className={cn(
                           "button-stroke button-small",
                           styles.button
                         )}
                       >
-                        Purchase now
+                        Place a bid
                       </button>
-
                     </div>
                   </Link>
                 )
             )}
           </div>
         </div>
-        {/* <div className={styles.sidebar}>
+        <div className={styles.sidebar}>
           <div className={styles.info}>
             Latest upload from creators{" "}
             <span className={styles.smile} role="img" aria-label="fire">
@@ -182,7 +173,7 @@ const Selection = () => {
             <span>Discover more</span>
             <Icon name="arrow-next" size="10" />
           </Link>
-        </div> */}
+        </div>
       </div>
     </div>
   );

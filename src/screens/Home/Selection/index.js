@@ -151,7 +151,7 @@ const Selection = () => {
             )}
           </div>
         </div>
-        <div className={styles.sidebar}>
+        {/* <div className={styles.sidebar}>
           <div className={styles.info}>
             Latest upload from creators{" "}
             <span className={styles.smile} role="img" aria-label="fire">
@@ -182,7 +182,7 @@ const Selection = () => {
             <span>Discover more</span>
             <Icon name="arrow-next" size="10" />
           </Link>
-        </div>
+        </div> */}
       </div>
     </div>
   );
